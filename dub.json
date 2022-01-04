@@ -1,0 +1,12 @@
+{
+	"authors": [
+		"Bean Machine"
+	],
+	"copyright": "Copyright © 2021, Bean Machine",
+	"dependencies": {
+		"pegged": "~>0.4.5"
+	},
+	"description": "JIT for ARMv4T",
+	"license": "BSD-3",
+	"name": "armv4t-jit"
+}

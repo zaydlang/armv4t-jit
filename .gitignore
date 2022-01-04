@@ -1,0 +1,15 @@
+.dub
+docs.json
+__dummy.html
+docs/
+/armv4t-jit
+armv4t-jit.so
+armv4t-jit.dylib
+armv4t-jit.dll
+armv4t-jit.a
+armv4t-jit.lib
+armv4t-jit-test-*
+*.exe
+*.o
+*.obj
+*.lst
