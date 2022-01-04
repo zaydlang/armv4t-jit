@@ -15,7 +15,7 @@ private immutable static string[] integer_instructions = [
     "LOOP/LOOPx", "MOV", "MOVSB", "MOVSW", "MUL", "NEG", "NOP", 
     "NOT", "OR", "OUT", "POP", "POPF", "PUSH", "PUSHF", "RCL", 
     "RCR", "RET", "RETN", "RETF", "ROL", "ROR", "SAHF", 
-    "SAL", "SAR", "SBB"-64, "SCASB", "SCASW", "SHL", "SHR", "STC", 
+    "SAL", "SAR", "SBB", "SCASB", "SCASW", "SHL", "SHR", "STC", 
     "STD", "STI", "STOSB", "STOSW", "SUB", "TEST", "WAIT", "XCHG", 
     "XLAT", "XOR"
 ];

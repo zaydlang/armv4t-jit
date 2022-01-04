@@ -1,5 +1,7 @@
 module host.x86.types;
 
+import std.sumtype;
+
 alias u32 = uint;
 alias s32 = int;
 alias u16 = ushort;
@@ -7,36 +9,70 @@ alias s16 = short;
 alias u8  = ubyte;
 alias s8  = byte;
 
-alias Immediate8  = u8;
-alias Immediate16 = u16;
 alias Immediate32 = u32;
+alias Immediate16 = u16;
+alias Immediate8  = u8;
 
 enum Register32 {
-    eax, ecx, edx, ebx,
-    esp, ebp, esi, edi,
-    r8d, r9d, r10d, r11d,
-    r12d, r13d, r14d, r15d
+    eax = 0, ecx, edx, ebx,
+    esp, ebp, esi, edi
 }
 
 enum Register16 {
-    ax, cx, dx, bx,
-    si, di, sp, bp,
-    r8w, r9w, r10w, r11w,
-    r12w, r13w, r14w, r15w
+    ax = 0, cx, dx, bx,
+    si, di, sp, bp
 }
 
 enum Register8 {
-    al, cl, dl, bl,
-    sil, dil, spl, bpl,
-    r8b, r9b, r10b, r11b,
-    r12b, r13b, r14b, r15b
+    al = 0, cl, dl, bl,
+    sil, dil, spl, bpl
 }
 
 alias Register    = SumType!(Register8, Register16, Register32);
 alias Immediate   = SumType!(Immediate8, Immediate16, Immediate32);
 alias Operand     = SumType!(Register, Immediate);
 
-struct ArithmeticLogicInstruction {
+static pure bool Is8Bit (Operand o) { return GetNumBytes(o) == 1; }
+static pure bool Is16Bit(Operand o) { return GetNumBytes(o) == 2; }
+static pure bool Is32Bit(Operand o) { return GetNumBytes(o) == 4; }
+
+static pure int GetNumBytes(Operand o) {
+    return o.match!(
+        (Register r) => (r.match!(
+            (Register8  x) => 1,
+            (Register16 x) => 2,
+            (Register32 x) => 4
+        )),
+        (Immediate  m) => (m.match!(
+            (Immediate8  x) => 1,
+            (Immediate16 x) => 2,
+            (Immediate32 x) => 4
+        ))
+    );
+}
+
+static pure u8 AsU8(Operand o) {
+    return o.match!(
+        (Register r) => (r.match!(
+            (Register8  x) => cast(u8) x,
+            (Register16 x) => cast(u8) x,
+            (Register32 x) => cast(u8) x,
+        )),
+        (Immediate  m) => (m.match!(
+            (Immediate8  x) => x,
+            (Immediate16 x) => cast(u8) 0x0, // throw an error?
+            (Immediate32 x) => cast(u8) 0x0
+        ))
+    );
+}
+
+struct MODREGRM {
+    enum MOD {
+        REGISTER_ADDRESSING_MODE = 0b11
+    }
+}
+
+struct Instruction {
     string name;
 
     u8 base_opcode;
@@ -44,7 +80,7 @@ struct ArithmeticLogicInstruction {
     u8 num_operands;
 }
 
-ArithmeticLogicInstruction neg = {
+Instruction neg = {
     name:             "NEG",
     base_opcode:      0xF6,
     opcode_extension: 3,
