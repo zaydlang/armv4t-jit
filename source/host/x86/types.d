@@ -35,3 +35,18 @@ enum Register8 {
 alias Register    = SumType!(Register8, Register16, Register32);
 alias Immediate   = SumType!(Immediate8, Immediate16, Immediate32);
 alias Operand     = SumType!(Register, Immediate);
+
+struct ArithmeticLogicInstruction {
+    string name;
+
+    u8 base_opcode;
+    u8 opcode_extension;
+    u8 num_operands;
+}
+
+ArithmeticLogicInstruction neg = {
+    name:             "NEG",
+    base_opcode:      0xF6,
+    opcode_extension: 3,
+    num_operands:     1
+};

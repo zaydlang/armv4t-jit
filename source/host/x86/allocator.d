@@ -1,4 +1,4 @@
-module host.x86-64.allocator;
+module host.x86.allocator;
 
 import core.memory;
 import core.stdc.errno;
