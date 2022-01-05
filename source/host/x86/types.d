@@ -20,17 +20,29 @@ enum Register32 {
 
 enum Register16 {
     ax = 0, cx, dx, bx,
-    si, di, sp, bp
+    sp, bp, si, di
 }
 
 enum Register8 {
     al = 0, cl, dl, bl,
-    sil, dil, spl, bpl
+    spl, bpl, sil, dil
+}
+
+enum Size {
+    BYTE       = 1,
+    WORD       = 2,
+    DOUBLEWORD = 4
 }
 
 alias Register    = SumType!(Register8, Register16, Register32);
 alias Immediate   = SumType!(Immediate8, Immediate16, Immediate32);
-alias Operand     = SumType!(Register, Immediate);
+
+struct RegisterIndirect {
+    Register register;
+    Size     size;
+}
+
+alias Operand     = SumType!(Register, RegisterIndirect, Immediate);
 
 static pure bool Is8Bit (Operand o) { return GetNumBytes(o) == 1; }
 static pure bool Is16Bit(Operand o) { return GetNumBytes(o) == 2; }
@@ -43,6 +55,7 @@ static pure int GetNumBytes(Operand o) {
             (Register16 x) => 2,
             (Register32 x) => 4
         )),
+        (RegisterIndirect r) => r.size,
         (Immediate  m) => (m.match!(
             (Immediate8  x) => 1,
             (Immediate16 x) => 2,
@@ -58,7 +71,8 @@ static pure u8 AsU8(Operand o) {
             (Register16 x) => cast(u8) x,
             (Register32 x) => cast(u8) x,
         )),
-        (Immediate  m) => (m.match!(
+        (RegisterIndirect r) => (cast(Operand) r.register).AsU8(),
+        (Immediate m) => (m.match!(
             (Immediate8  x) => x,
             (Immediate16 x) => cast(u8) 0x0, // throw an error?
             (Immediate32 x) => cast(u8) 0x0

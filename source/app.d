@@ -12,5 +12,5 @@ void main() {
 		adc %eax, 0x1
 	`);
 
-	EmitArithmeticLogicSingleOperand(neg, cast(Operand) cast(Register) Register16.ax);
+	EmitArithmeticLogicSingleOperand(neg, cast(Operand) RegisterIndirect(cast(Register) Register32.esp, Size.BYTE));
 }
