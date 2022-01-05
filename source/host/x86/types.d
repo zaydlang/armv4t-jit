@@ -49,34 +49,62 @@ static pure bool Is16Bit(Operand o) { return GetNumBytes(o) == 2; }
 static pure bool Is32Bit(Operand o) { return GetNumBytes(o) == 4; }
 
 static pure int GetNumBytes(Operand o) {
+    // what the fuck
+    // i hate that this code needed
+    // please
+    
     return o.match!(
-        (Register r) => (r.match!(
-            (Register8  x) => 1,
-            (Register16 x) => 2,
-            (Register32 x) => 4
-        )),
-        (RegisterIndirect r) => r.size,
-        (Immediate  m) => (m.match!(
-            (Immediate8  x) => 1,
-            (Immediate16 x) => 2,
-            (Immediate32 x) => 4
-        ))
+        (Register r)         => r.GetNumBytes(),
+        (RegisterIndirect r) => r.GetNumBytes(),
+        (Immediate m)        => m.GetNumBytes()
     );
 }
 
-static pure u8 AsU8(Operand o) {
+static pure int GetNumBytes(Register r) {
+    return r.match!(
+        (Register8  x) => 1,
+        (Register16 x) => 2,
+        (Register32 x) => 4
+    );
+}
+
+static pure int GetNumBytes(RegisterIndirect r) {
+    return r.size;
+}
+
+static pure int GetNumBytes(Immediate m) {
+    return m.match!(
+        (Immediate8  x) => 1,
+        (Immediate16 x) => 2,
+        (Immediate32 x) => 4
+    );
+}
+
+static pure int AsU8(Operand o) {
     return o.match!(
-        (Register r) => (r.match!(
-            (Register8  x) => cast(u8) x,
-            (Register16 x) => cast(u8) x,
-            (Register32 x) => cast(u8) x,
-        )),
-        (RegisterIndirect r) => (cast(Operand) r.register).AsU8(),
-        (Immediate m) => (m.match!(
-            (Immediate8  x) => x,
-            (Immediate16 x) => cast(u8) 0x0, // throw an error?
-            (Immediate32 x) => cast(u8) 0x0
-        ))
+        (Register r)         => r.AsU8(),
+        (RegisterIndirect r) => r.AsU8(),
+        (Immediate m)        => m.AsU8()
+    );
+}
+
+static pure u8 AsU8(Register r) {
+    return r.match!(
+        (Register8  x) => cast(u8) x,
+        (Register16 x) => cast(u8) x,
+        (Register32 x) => cast(u8) x,
+    );
+}
+
+static pure u8 AsU8(RegisterIndirect r) {
+    return r.register.AsU8();
+}
+
+static pure u8 AsU8(Immediate m) {
+    return m.match!(
+        (Immediate8  x) => x,
+        (Immediate16 x) => cast(u8) 0x0, // throw an error?
+        (Immediate32 x) => cast(u8) 0x0
     );
 }
 
